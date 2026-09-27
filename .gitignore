@@ -34,3 +34,10 @@ env/
 
 # Logs
 *.log
+
+# Node & Android Build
+node_modules/
+.gradle/
+android/app/build/
+android/.gradle/
+release-apk/

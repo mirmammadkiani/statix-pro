@@ -1,0 +1,18 @@
+{
+  "name": "statix-pro",
+  "version": "1.0.0",
+  "description": "STATIX PRO - Civil Engineering Statics Suite (Beer & Johnston)",
+  "main": "frontend/index.html",
+  "scripts": {
+    "build": "echo Web build ready",
+    "cap:sync": "cap sync",
+    "cap:open": "cap open android"
+  },
+  "author": "AmirMohammad Kiani",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/android": "^6.1.2"
+  }
+}

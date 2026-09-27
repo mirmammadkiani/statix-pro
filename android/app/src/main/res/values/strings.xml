@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">STATIX PRO</string>
+    <string name="title_activity_main">STATIX PRO</string>
+    <string name="package_name">com.mirmammadkiani.statixpro</string>
+    <string name="custom_url_scheme">com.mirmammadkiani.statixpro</string>
+</resources>

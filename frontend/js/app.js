@@ -412,16 +412,21 @@ document.getElementById('beamLength').addEventListener('input', (e) => {
 });
 
 async function solveBeam() {
+    let data;
     try {
         const res = await fetch('/api/solve/beam', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(beamModel)
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || 'خطا در تحلیل تیر');
+        if (!res.ok) throw new Error();
+        data = await res.json();
+    } catch (err) {
+        // 100% Offline Standalone Android Engine Fallback
+        data = StatixEngine.solveBeam(beamModel);
+    }
 
-        lastBeamResults = data;
+    lastBeamResults = data;
 
         // Update Badges
         document.getElementById('sfdExtremaBadge').textContent = `V_max = ${data.max_shear} kN | V_min = ${data.min_shear} kN`;
@@ -802,16 +807,20 @@ window.addTrussSupportRow = () => { trussModel.supports.push({ node: 0, type: 'r
 window.addTrussLoadRow = () => { trussModel.loads.push({ node: 0, fx: 0, fy: -10000 }); renderTrussUI(); };
 
 async function solveTruss() {
+    let data;
     try {
         const res = await fetch('/api/solve/truss', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(trussModel)
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || 'خطا در تحلیل خرپا');
+        if (!res.ok) throw new Error();
+        data = await res.json();
+    } catch (err) {
+        data = StatixEngine.solveTruss(trussModel);
+    }
 
-        lastTrussResults = data;
+    lastTrussResults = data;
 
         document.getElementById('trussDeterminacyBadge').textContent =
             data.determinacy === 'determinate' ? 'معین استاتیکی' : data.determinacy;
@@ -1036,14 +1045,18 @@ window.addCentroidShapeRow = () => {
 };
 
 async function solveCentroids() {
+    let data;
     try {
         const res = await fetch('/api/solve/centroids', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ shapes: centroidShapes })
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail);
+        if (!res.ok) throw new Error();
+        data = await res.json();
+    } catch (err) {
+        data = StatixEngine.solveCentroids(centroidShapes);
+    }
 
         document.getElementById('centroidBadge').textContent = `x̄ = ${data.x_bar} , ȳ = ${data.y_bar}`;
 
@@ -1152,14 +1165,18 @@ function renderInertiaUI() {
 }
 
 async function solveInertia() {
+    let data;
     try {
         const res = await fetch('/api/solve/inertia', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ shapes: inertiaShapes })
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail);
+        if (!res.ok) throw new Error();
+        data = await res.json();
+    } catch (err) {
+        data = StatixEngine.solveInertia(inertiaShapes);
+    }
 
         document.getElementById('mohrBadge').textContent =
             `I_max = ${data.principal_moments.I_max.toLocaleString()} | I_min = ${data.principal_moments.I_min.toLocaleString()}`;
@@ -1250,14 +1267,18 @@ async function solveParabolicCable() {
     const sag_h = parseFloat(document.getElementById('cableSag').value);
     const w_per_m = parseFloat(document.getElementById('cableLoad').value);
 
+    let data;
     try {
         const res = await fetch('/api/solve/cables/parabolic', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ span_L, sag_h, w_per_m })
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail);
+        if (!res.ok) throw new Error();
+        data = await res.json();
+    } catch (err) {
+        data = StatixEngine.solveParabolicCable(span_L, sag_h, w_per_m);
+    }
 
         document.getElementById('cableBadge').textContent = `T_max = ${data.max_tension_Tmax} kN`;
 
@@ -1339,14 +1360,18 @@ async function solveFrictionSlipTip() {
         mu_s: parseFloat(document.getElementById('fricMu').value)
     };
 
+    let data;
     try {
         const res = await fetch('/api/solve/friction/slip-tip', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail);
+        if (!res.ok) throw new Error();
+        data = await res.json();
+    } catch (err) {
+        data = StatixEngine.solveFrictionSlipTip(payload);
+    }
 
         document.getElementById('frictionGoverningBadge').textContent = `حالت حاکم: ${data.governing_mode}`;
 
