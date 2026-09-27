@@ -29,15 +29,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Install NPM Dependencies
         run: npm install
 
-      - name: Initialize Capacitor Android Project
+      - name: Sync Capacitor Android Project
         run: |
-          npx cap add android || true
           npx cap sync android
 
       - name: Build Android Debug APK with Gradle
@@ -46,11 +46,11 @@ jobs:
           chmod +x ./gradlew
           ./gradlew assembleDebug --stacktrace
 
-      - name: Locate and Rename APK
+      - name: Locate and Prepare APK
         run: |
           mkdir -p release-apk
           cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/statix-pro-v1.0.apk
-          echo "APK generated successfully at release-apk/statix-pro-v1.0.apk"
+          echo "APK successfully built at release-apk/statix-pro-v1.0.apk"
 
       - name: Upload APK as GitHub Actions Artifact
         uses: actions/upload-artifact@v4
@@ -59,19 +59,20 @@ jobs:
           path: release-apk/statix-pro-v1.0.apk
           retention-days: 90
 
-      - name: Create GitHub Release with APK
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.0
-          name: STATIX PRO v1.0.0 (Android APK & Desktop)
+          name: STATIX PRO v1.0.0 (Android APK)
           body: |
-            ## 📱 دانلود فایل نصبی مستقیم اندروید (Standalone Android APK)
-            
-            فایل نصبی مستقیم اپلیکیشن مهندسی استاتیک عمران برای تمام گوشی‌ها و تبلت‌های اندروید.
-            
-            - **دانلود مستقیم APK:** فایل `statix-pro-v1.0.apk` پیوست شده را دانلود کرده و روی گوشی خود نصب کنید.
-            - **ویژگی‌ها:** ۱۰۰٪ مستقل و آفلاین (بدون نیاز به اینترنت و بدون نیاز به سرور)، محاسبات سریع تیر، خرپا، بردار، لنگر، اصطکاک و کابل‌ها.
+            ## 📱 فایل نصبی مستقیم اپلیکیشن اندروید (Standalone APK)
+
+            فایل نصبی مستقیم برای تمامی گوشی‌ها و تبلت‌های اندروید.
+
+            * **فایل نصبی:** `statix-pro-v1.0.apk`
+            * **قابلیت‌ها:** ۱۰۰٪ مستقل و آفلاین، بدون نیاز به سرور یا اینترنت
+            * **سرفصل‌ها:** تحلیل تیر، دیاگرام برش و لنگر (SFD/BMD)، خرپا، بردارها، لنگر، مرکز سطح، اینرسی، اصطکاک و کابل‌ها.
           files: release-apk/statix-pro-v1.0.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
