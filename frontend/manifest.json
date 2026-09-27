@@ -1,0 +1,22 @@
+{
+  "name": "STATIX PRO - سامانه تحلیل استاتیک عمران",
+  "short_name": "StatixPro",
+  "description": "نرم‌افزار جامع حل و تحلیل مسائل استاتیک مهندسی عمران بر مبنای کتاب بیر جانسون",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0a0e17",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "engineering", "productivity"]
+}

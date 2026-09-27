@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STATIX PRO | سامانه جامع تحلیل استاتیک مهندسی عمران (کتاب بیر جانسون)</title>
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Vazirmatn Persian Font & KaTeX for formulas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Header Bar -->
+    <header class="app-header">
+        <div class="header-left">
+            <button id="btnToggleSidebar" class="mobile-menu-btn" title="منوی فصول">☰</button>
+            <div class="logo-box">
+                <span class="logo-icon">📐</span>
+                <div class="logo-text">
+                    <span class="logo-title">STATIX PRO</span>
+                    <span class="logo-subtitle">موتور تخصصی تحلیل سازه‌ها (دسکتاپ و اندروید)</span>
+                </div>
+            </div>
+            <div class="badge-engine">موتور FEM & ماتریسی</div>
+        </div>
+
+        <div class="header-center">
+            <div class="preset-selector">
+                <label for="presetDropdown">📚 نمونه‌های بیر جانسون:</label>
+                <select id="presetDropdown" class="form-select">
+                    <option value="">انتخاب مسئله الگو...</option>
+                </select>
+                <button id="btnLoadPreset" class="btn btn-outline" title="بارگذاری مسئله انتخاب شده">بارگذاری</button>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <button id="btnConnectMobile" class="btn btn-secondary" title="اتصال سریع با گوشی اندروید">
+                <span>📱 اتصال به اندروید</span>
+            </button>
+            <button id="btnInstallPwa" class="btn btn-outline" style="display:none;" title="نصب مستقیم به عنوان اپلیکیشن">
+                <span>⬇️ نصب اپلیکیشن</span>
+            </button>
+            <button id="btnSolve" class="btn btn-primary">
+                <span class="btn-icon">⚡</span>
+                <span>تحلیل سریع</span>
+            </button>
+            <button id="btnExport" class="btn btn-secondary" title="دریافت خلاصه گزارش">
+                <span>📋 کپی</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="main-container">
+        <!-- Sidebar Navigation Tabs -->
+        <aside class="sidebar">
+            <div class="sidebar-title">فصول استاتیک (Beer & Johnston)</div>
+            <nav class="module-nav">
+                <button class="nav-item active" data-tab="tab-beams">
+                    <span class="nav-icon">🏗️</span>
+                    <div class="nav-info">
+                        <span class="nav-name">تیرها و دیاگرام‌های SFD/BMD</span>
+                        <span class="nav-desc">فصل ۷: برش، لنگر، بار گسترده و مفاصل</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-trusses">
+                    <span class="nav-icon">📐</span>
+                    <div class="nav-info">
+                        <span class="nav-name">تحلیل خرپاها (Trusses)</span>
+                        <span class="nav-desc">فصل ۶: اعضای کششی، فشاری و صفر نیرویی</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-vectors">
+                    <span class="nav-icon">🧭</span>
+                    <div class="nav-info">
+                        <span class="nav-name">بردارها و تعادل ذره</span>
+                        <span class="nav-desc">فصل ۲ و ۳: برآیند، کابل‌های ۲D و ۳D</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-rigid">
+                    <span class="nav-icon">⚖️</span>
+                    <div class="nav-info">
+                        <span class="nav-name">اجسام صلب و لنگر</span>
+                        <span class="nav-desc">فصل ۳ و ۴: گشتاور حول نقطه/محور، آچار پیچی</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-centroids">
+                    <span class="nav-icon">🎯</span>
+                    <div class="nav-info">
+                        <span class="nav-name">مرکز سطح و پاپوس</span>
+                        <span class="nav-desc">فصل ۵: مقاطع مرکب، حجم‌های دورانی</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-inertia">
+                    <span class="nav-icon">🔵</span>
+                    <div class="nav-info">
+                        <span class="nav-name">ممان اینرسی و دایره مور</span>
+                        <span class="nav-desc">فصل ۹: قضایای محور موازی، محورهای اصلی</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-cables">
+                    <span class="nav-icon">➰</span>
+                    <div class="nav-info">
+                        <span class="nav-name">کابل‌ها و پل معلق</span>
+                        <span class="nav-desc">فصل ۷: کابل سهموی، کشش بیشینه و افتادگی</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-friction">
+                    <span class="nav-icon">🧱</span>
+                    <div class="nav-info">
+                        <span class="nav-name">اصطکاک، لغزش و واژگونی</span>
+                        <span class="nav-desc">فصل ۸: بررسی Slip vs Tip و اصطکاک تسمه</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-tab="tab-virtual">
+                    <span class="nav-icon">⚙️</span>
+                    <div class="nav-info">
+                        <span class="nav-name">کار مجازی و پایداری</span>
+                        <span class="nav-desc">فصل ۱۰: انرژی پتانسیل و پایداری تعادل</span>
+                    </div>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <span>Statix Pro v1.0 • آماده تحلیل مهندسی</span>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <!-- TAB 1: BEAMS -->
+            <div id="tab-beams" class="tab-panel active">
+                <div class="panel-layout">
+                    <!-- Controls Column -->
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚙️ مشخصات تیر و تکیه‌گاه‌ها</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>طول کل تیر (متر):</label>
+                                    <input type="number" id="beamLength" class="form-control" value="12" step="0.5" min="0.1">
+                                </div>
+
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>تکیه‌گاه‌ها:</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addBeamSupportRow()">+ افزودن</button>
+                                    </div>
+                                    <div id="beamSupportsList" class="dynamic-list"></div>
+                                </div>
+
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>مفصل‌های داخلی (Hinges):</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addBeamHingeRow()">+ افزودن</button>
+                                    </div>
+                                    <div id="beamHingesList" class="dynamic-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>⚡ بارگذاری تیر</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>بارهای متمرکز (Point Loads):</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addBeamPointLoadRow()">+ افزودن</button>
+                                    </div>
+                                    <div id="beamPointLoadsList" class="dynamic-list"></div>
+                                </div>
+
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>لنگرهای متمرکز (Moments):</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addBeamMomentRow()">+ افزودن</button>
+                                    </div>
+                                    <div id="beamMomentsList" class="dynamic-list"></div>
+                                </div>
+
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>بارهای گسترده (Distributed):</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addBeamDistLoadRow()">+ افزودن</button>
+                                    </div>
+                                    <div id="beamDistLoadsList" class="dynamic-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Workspace & Results Column -->
+                    <div class="viewport-column">
+                        <!-- Structural Model Canvas -->
+                        <div class="card canvas-card">
+                            <div class="card-header space-between">
+                                <h3>🖼️ دیاگرام مدل سازه‌ای تیر</h3>
+                                <div class="canvas-legend">
+                                    <span class="legend-item"><span class="legend-dot pin"></span> تکیه‌گاه مفصلی/غلطکی</span>
+                                    <span class="legend-item"><span class="legend-dot load"></span> بارهای اعمالی</span>
+                                </div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="beamCanvas" width="900" height="220"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- SFD Chart Card -->
+                        <div class="card chart-card mt-3">
+                            <div class="card-header space-between">
+                                <h3>📊 دیاگرام نیروی برشی (SFD - V)</h3>
+                                <div id="sfdExtremaBadge" class="extrema-badge">V_max = -- kN</div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="sfdCanvas" width="900" height="180"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- BMD Chart Card -->
+                        <div class="card chart-card mt-3">
+                            <div class="card-header space-between">
+                                <h3>📈 دیاگرام لنگر خمشی (BMD - M)</h3>
+                                <div id="bmdExtremaBadge" class="extrema-badge emerald">M_max = -- kN.m</div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="bmdCanvas" width="900" height="180"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Reactions & Summary Table -->
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>🎯 مقادیر دقیق عکس‌العمل‌های تکیه‌گاهی و نقاط بحرانی</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-grid">
+                                    <div class="table-container">
+                                        <table class="data-table" id="beamReactionsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>موقعیت x (m)</th>
+                                                    <th>نوع تکیه‌گاه</th>
+                                                    <th>عکس‌العمل عمودی Ry (kN)</th>
+                                                    <th>لنگر گیرداری Rm (kN.m)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td colspan="4" class="text-center">مدل را تحلیل کنید.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="summary-box" id="beamSummaryBox">
+                                        <h4>نقاط بحرانی سازه:</h4>
+                                        <ul id="beamCriticalPointsList">
+                                            <li>برای مشاهده نقاط صفر برش و بیشینه لنگر، دکمه تحلیل سریع را بزنید.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: TRUSSES -->
+            <div id="tab-trusses" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📐 گره‌ها و اعضای خرپا</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>مختصات گره‌ها (Nodes):</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addTrussNodeRow()">+ گره</button>
+                                    </div>
+                                    <div id="trussNodesList" class="dynamic-list"></div>
+                                </div>
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>اعضای متصل‌کننده (Elements):</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addTrussElementRow()">+ عضو</button>
+                                    </div>
+                                    <div id="trussElementsList" class="dynamic-list"></div>
+                                </div>
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>تکیه‌گاه‌های خرپا:</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addTrussSupportRow()">+ تکیه‌گاه</button>
+                                    </div>
+                                    <div id="trussSupportsList" class="dynamic-list"></div>
+                                </div>
+                                <div class="sub-section">
+                                    <div class="section-title-row">
+                                        <h4>بارهای وارده به گره‌ها:</h4>
+                                        <button class="btn btn-sm btn-outline" onclick="addTrussLoadRow()">+ بار گرهی</button>
+                                    </div>
+                                    <div id="trussLoadsList" class="dynamic-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="viewport-column">
+                        <div class="card canvas-card">
+                            <div class="card-header space-between">
+                                <h3>🖼️ پلان خرپا و وضعیت نیروها در اعضا</h3>
+                                <div class="canvas-legend">
+                                    <span class="legend-item"><span class="legend-dot blue"></span> کشش (Tension)</span>
+                                    <span class="legend-item"><span class="legend-dot red"></span> فشار (Compression)</span>
+                                    <span class="legend-item"><span class="legend-dot gray"></span> صفر نیرویی (Zero)</span>
+                                </div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="trussCanvas" width="900" height="380"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header space-between">
+                                <h3>📋 جدول نیروهای داخلی اعضا و عکس‌العمل‌ها</h3>
+                                <div id="trussDeterminacyBadge" class="extrema-badge">معین استاتیکی</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="data-table" id="trussMembersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>عضو #</th>
+                                                <th>گره مبدا - مقصد</th>
+                                                <th>طول (m)</th>
+                                                <th>نیروی محوری (N)</th>
+                                                <th>نوع تنش</th>
+                                                <th>تنش محوری (MPa)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td colspan="6" class="text-center">خرپا هنوز تحلیل نشده است.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: VECTORS & PARTICLES -->
+            <div id="tab-vectors" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🧭 برآیند بردارها و ضرب‌ها</h3>
+                            </div>
+                            <div class="card-body">
+                                <h4>بردار اول A:</h4>
+                                <div class="vector-input-row">
+                                    <input type="number" id="vecA_x" class="form-control" placeholder="Ax" value="40">
+                                    <input type="number" id="vecA_y" class="form-control" placeholder="Ay" value="60">
+                                    <input type="number" id="vecA_z" class="form-control" placeholder="Az" value="20">
+                                </div>
+                                <h4 class="mt-2">بردار دوم B:</h4>
+                                <div class="vector-input-row">
+                                    <input type="number" id="vecB_x" class="form-control" placeholder="Bx" value="-30">
+                                    <input type="number" id="vecB_y" class="form-control" placeholder="By" value="50">
+                                    <input type="number" id="vecB_z" class="form-control" placeholder="Bz" value="80">
+                                </div>
+                                <button class="btn btn-outline w-100 mt-3" onclick="solveVectorMath()">محاسبه ضرب داخلی، خارجی و زاویه</button>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>🔗 تعادل ذره در فضا (۳ کابل)</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">محاسبه کشش در کابل‌های متصل به رینگ یا گره مشترک:</p>
+                                <div class="form-group">
+                                    <label>وزن بار متصل به رینگ (N) رو به پایین:</label>
+                                    <input type="number" id="partLoadY" class="form-control" value="1600">
+                                </div>
+                                <button class="btn btn-primary w-100 mt-2" onclick="solveParticleCables()">محاسبه کشش کابل‌ها</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="viewport-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎯 نتایج برداری و محاسبات</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-box-code" id="vectorResultsBox">
+                                    مقادیر بردارها را وارد کرده و دکمه محاسبه را بزنید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: RIGID BODY -->
+            <div id="tab-rigid" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚖️ محاسبه لنگر حول نقطه</h3>
+                            </div>
+                            <div class="card-body">
+                                <label>مختصات نقطه مبدا O (x, y, z):</label>
+                                <div class="vector-input-row">
+                                    <input type="number" id="pointO_x" class="form-control" value="0">
+                                    <input type="number" id="pointO_y" class="form-control" value="0">
+                                    <input type="number" id="pointO_z" class="form-control" value="0">
+                                </div>
+                                <label class="mt-2">نقطه اثر نیرو A (x, y, z):</label>
+                                <div class="vector-input-row">
+                                    <input type="number" id="pointA_x" class="form-control" value="2">
+                                    <input type="number" id="pointA_y" class="form-control" value="4">
+                                    <input type="number" id="pointA_z" class="form-control" value="1">
+                                </div>
+                                <label class="mt-2">مولفه‌های بردار نیرو F (Fx, Fy, Fz):</label>
+                                <div class="vector-input-row">
+                                    <input type="number" id="forceF_x" class="form-control" value="100">
+                                    <input type="number" id="forceF_y" class="form-control" value="-50">
+                                    <input type="number" id="forceF_z" class="form-control" value="80">
+                                </div>
+                                <button class="btn btn-primary w-100 mt-3" onclick="solveRigidMoment()">محاسبه لنگر Mo = r x F</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewport-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎯 بردار لنگر و سیستم معادل</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-box-code" id="rigidResultsBox">
+                                    دکمه محاسبه لنگر را برای مشاهده بردارها بزنید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: CENTROIDS -->
+            <div id="tab-centroids" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎯 اجزای مقطع مرکب</h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="centroidShapesList" class="dynamic-list"></div>
+                                <button class="btn btn-outline w-100 mt-2" onclick="addCentroidShapeRow()">+ افزودن قطعه</button>
+                                <button class="btn btn-primary w-100 mt-3" onclick="solveCentroids()">محاسبه مرکز سطح و لنگر اول</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewport-column">
+                        <div class="card canvas-card">
+                            <div class="card-header space-between">
+                                <h3>🖼️ تصویر مقطع و موقعیت مرکز سطح (C)</h3>
+                                <div id="centroidBadge" class="extrema-badge">x̄ = -- , ȳ = --</div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="centroidCanvas" width="900" height="360"></canvas>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>📊 جدول مساحت‌ها، لنگر اول و قضایای پاپوس گولدینوس</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="data-table" id="centroidTable">
+                                        <thead>
+                                            <tr>
+                                                <th>قطعه #</th>
+                                                <th>نوع</th>
+                                                <th>مساحت A</th>
+                                                <th>x̄i</th>
+                                                <th>ȳi</th>
+                                                <th>Qx = ȳ·A</th>
+                                                <th>Qy = x̄·A</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td colspan="7" class="text-center">مقادیر را محاسبه کنید.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: INERTIA -->
+            <div id="tab-inertia" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🔵 مقطع برای ممان اینرسی</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-muted">ممان اینرسی برای مقاطع مرکب استاندارد (نبشی، قوطی، تیر I و T):</p>
+                                <div id="inertiaShapesList" class="dynamic-list"></div>
+                                <button class="btn btn-primary w-100 mt-3" onclick="solveInertia()">محاسبه ممان‌های اینرسی و دایره مور</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewport-column">
+                        <div class="card canvas-card">
+                            <div class="card-header space-between">
+                                <h3>📈 دایره مور برای ممان اینرسی (Mohr's Circle of Inertia)</h3>
+                                <div id="mohrBadge" class="extrema-badge">I_max = -- , I_min = --</div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="mohrCanvas" width="900" height="380"></canvas>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>🎯 خلاصه گشتاورهای دوم سطح</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-box-code" id="inertiaResultsBox">
+                                    برای نمایش ممان‌های اینرسی اصلی دکمه بالا را بزنید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: CABLES -->
+            <div id="tab-cables" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>➰ کابل سهموی با بار یکنواخت</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>طول دهانه کابل L (متر):</label>
+                                    <input type="number" id="cableSpan" class="form-control" value="100">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>افتادگی کابل در مرکز h (متر):</label>
+                                    <input type="number" id="cableSag" class="form-control" value="10">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>بار یکنواخت افقی w (kN/m):</label>
+                                    <input type="number" id="cableLoad" class="form-control" value="50">
+                                </div>
+                                <button class="btn btn-primary w-100 mt-3" onclick="solveParabolicCable()">تحلیل کابل و کشش بیشینه</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewport-column">
+                        <div class="card canvas-card">
+                            <div class="card-header space-between">
+                                <h3>🖼️ نیمرخ کابل و توزیع کشش</h3>
+                                <div id="cableBadge" class="extrema-badge">T_max = -- kN</div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="cableCanvas" width="900" height="300"></canvas>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>🎯 نتایج کشش کابل، واکنش‌ها و طول واقعی کابل</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-box-code" id="cableResultsBox">
+                                    اطلاعات کابل را تحلیل کنید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: FRICTION -->
+            <div id="tab-friction" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🧱 بلوک روی سطح شیب‌دار (Slip vs Tip)</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>وزن بلوک W (N):</label>
+                                    <input type="number" id="fricW" class="form-control" value="800">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>عرض قاعده بلوک b (m):</label>
+                                    <input type="number" id="fricB" class="form-control" value="0.5">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>ارتفاع بلوک h (m):</label>
+                                    <input type="number" id="fricH" class="form-control" value="1.0">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>ارتفاع نقطه اعمال نیرو y (m):</label>
+                                    <input type="number" id="fricY" class="form-control" value="0.7">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>شیب سطح (درجه):</label>
+                                    <input type="number" id="fricTheta" class="form-control" value="15">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>ضریب اصطکاک ایستا μs:</label>
+                                    <input type="number" id="fricMu" class="form-control" value="0.35" step="0.05">
+                                </div>
+                                <button class="btn btn-primary w-100 mt-3" onclick="solveFrictionSlipTip()">تحلیل لغزش در برابر واژگونی</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewport-column">
+                        <div class="card canvas-card">
+                            <div class="card-header space-between">
+                                <h3>🖼️ شبیه‌سازی بلوک و دیاگرام جسم آزاد</h3>
+                                <div id="frictionGoverningBadge" class="extrema-badge">حالت حاکم: --</div>
+                            </div>
+                            <div class="card-body canvas-wrapper">
+                                <canvas id="frictionCanvas" width="900" height="320"></canvas>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3>🎯 مقایسه نیروی بحرانی لغزش و واژگونی</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-box-code" id="frictionResultsBox">
+                                    برای تحلیل دکمه را فشار دهید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 9: VIRTUAL WORK -->
+            <div id="tab-virtual" class="tab-panel">
+                <div class="panel-layout">
+                    <div class="input-sidebar">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚙️ انرژی پتانسیل V(θ) و پایداری</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>تابع انرژی پتانسیل V(θ):</label>
+                                    <input type="text" id="vwExpr" class="form-control" value="50 * theta**2 - 200 * (1 - cos(theta))" placeholder="مثال: 0.5*k*theta**2 - W*L*(1-cos(theta))">
+                                </div>
+                                <p class="small text-muted mt-1">توابع مجاز: sin, cos, tan, sqrt, pi</p>
+                                <button class="btn btn-primary w-100 mt-3" onclick="solveVirtualWork()">بررسی نقاط تعادل و پایداری</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="viewport-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎯 نقاط تعادل، مشتقات و وضعیت پایداری</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="results-box-code" id="virtualResultsBox">
+                                    برای ارزیابی مشتقات و نقاط تعادل دکمه را بزنید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Android QR Code Modal -->
+    <div id="mobileModal" class="modal-backdrop" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>📱 اتصال به گوشی اندروید (نصب اپلیکیشن)</h3>
+                <button class="modal-close-btn" onclick="closeMobileModal()">✕</button>
+            </div>
+            <div class="modal-body text-center">
+                <p>دوربین گوشی اندروید خود را مقابل کد QR زیر بگیرید:</p>
+                <div class="qr-container">
+                    <img id="qrCodeImg" alt="QR Code" src="" style="width: 200px; height: 200px; border-radius: 8px;">
+                </div>
+                <div class="url-badge-box">
+                    <span id="mobileUrlText" class="url-text">http://...</span>
+                    <button class="btn btn-sm btn-outline" onclick="copyMobileUrl()">کپی آدرس</button>
+                </div>
+                <div class="modal-instructions">
+                    <strong>💡 نحوه نصب روی اندروید:</strong>
+                    <ol>
+                        <li>گوشی و کامپیوتر را به یک شبکه وای‌فای (Wi-Fi) یکسان متصل کنید.</li>
+                        <li>لینک را در مرورگر کروم گوشی باز کنید.</li>
+                        <li>منوی ۳ نقطه مرورگر را بزنید و گزینه <b>«افزودن به صفحه اصلی / Add to Home screen»</b> یا <b>«نصب برنامه / Install app»</b> را لمس کنید.</li>
+                        <li>نرم‌افزار با آیکون اختصاصی و به صورت تمام‌صفحه (بدون نوار آدرس مرورگر) مثل یک اپلیکیشن بومی اندروید نصب خواهد شد.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>

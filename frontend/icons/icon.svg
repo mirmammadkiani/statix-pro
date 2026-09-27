@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="url(#bg)" />
+  <!-- Truss / Beam Geometry -->
+  <path d="M 80 340 L 432 340" stroke="url(#beam)" stroke-width="24" stroke-linecap="round" />
+  <path d="M 120 340 L 256 160 L 392 340 Z" fill="none" stroke="#38bdf8" stroke-width="18" stroke-linejoin="round" />
+  <path d="M 256 160 L 256 340" stroke="#fbbf24" stroke-width="14" stroke-dasharray="16 10" />
+  <circle cx="120" cy="340" r="16" fill="#fbbf24" stroke="#0f172a" stroke-width="4" />
+  <circle cx="392" cy="340" r="16" fill="#fbbf24" stroke="#0f172a" stroke-width="4" />
+  <circle cx="256" cy="160" r="18" fill="#f43f5e" stroke="#0f172a" stroke-width="4" />
+  <!-- Downward Load Arrow -->
+  <path d="M 256 80 L 256 140" stroke="#f43f5e" stroke-width="16" stroke-linecap="round" />
+  <polygon points="236,135 256,160 276,135" fill="#f43f5e" />
+</svg>
